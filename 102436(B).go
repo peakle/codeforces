@@ -10,7 +10,7 @@ import (
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	var inputs []string
-	var result int
+	//var result int
 
 	scanner.Scan()
 	n, _ := strconv.Atoi(scanner.Text())
@@ -20,45 +20,55 @@ func main() {
 		inputs = append(inputs, scanner.Text())
 	}
 
-	result = getMinDiffWord(inputs)
+	result := getMostPopularWord(inputs)
 
 	fmt.Println(result)
 }
 
-func getMinDiffWord(words []string) int {
-	minDiff := 100000
+func getMostPopularWord(words []string) int {
+	// 1 - letter index, 2 - letter, 3 - repeat count
+	ethalonMap := make(map[int]map[uint8]int)
 
-	for _, wordA := range words {
-		diff := 0
-		lenWordA := len(wordA)
+	for _, word := range words {
+		for letterIndex := range word {
+			letter := word[letterIndex]
 
-		for _, wordB := range words {
-			if wordA != wordB {
-				lenWordB := len(wordB)
-
-				for indexWordA := range wordA {
-					if indexWordA >= lenWordB {
-						continue
-					}
-
-					letterA := wordA[indexWordA]
-					letterB := wordB[indexWordA]
-
-					if letterA != letterB {
-						diff++
-					}
-				}
-
-				if lenWordA <= lenWordB {
-					diff += lenWordB - lenWordA
-				}
+			if ethalonMap[letterIndex] != nil {
+				ethalonMap[letterIndex][letter]++
+			} else {
+				m := make(map[uint8]int)
+				m[letter]++
+				ethalonMap[letterIndex] = m
 			}
-		}
-
-		if diff < minDiff && diff != 0 {
-			minDiff = diff
 		}
 	}
 
-	return minDiff
+	var maxRepeatCount int
+	bestWord := make(map[int]uint8)
+	for letterIndex, letterMap := range ethalonMap {
+		maxRepeatCount = 0
+		for letter, repeatCount := range letterMap {
+			if repeatCount > maxRepeatCount {
+				maxRepeatCount = repeatCount
+				bestWord[letterIndex] = letter
+			}
+		}
+	}
+
+	diff := 0
+	for _, word := range words {
+		lenWord := len(word)
+		for letterIndex, bestLetter := range bestWord {
+			if letterIndex >= lenWord {
+				continue
+			}
+
+			letter := word[letterIndex]
+			if bestLetter != letter {
+				diff++
+			}
+		}
+	}
+
+	return diff
 }
