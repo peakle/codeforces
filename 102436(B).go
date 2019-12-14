@@ -8,7 +8,9 @@ import (
 )
 
 func main() {
+	buf := make([]byte, 0, 100100)
 	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Buffer(buf, 100100)
 	var inputs []string
 	//var result int
 
