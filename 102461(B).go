@@ -30,14 +30,28 @@ func main() {
 		s2, _ := strconv.Atoi(data[2])
 		d2, _ = strconv.Atoi(data[3])
 
-		if s1+d1 <= s2 {
+		if s1+d1 <= s2 ||  s1 >= s2+d2 {
 			fmt.Println(s1, s2)
 			continue
 		}
 
-		if s1 >= s2+d2 {
-			fmt.Println(s1, s2)
-			continue
+		ds := d1 + d2
+		if l1 < l2 {
+			if r1 < r2 && r2-l1 < ds {
+				fmt.Println(-1, -1)
+				continue
+			} else if r1 > r2 && r1-l1 < ds {
+				fmt.Println(-1, -1)
+				continue
+			}
+		} else {
+			if r1 > r2 && r1-l2 < ds {
+				fmt.Println(-1, -1)
+				continue
+			} else if r1 < r2 && r2-l2 < ds {
+				fmt.Println(-1, -1)
+				continue
+			}
 		}
 
 		rList := make([]int, 2)
@@ -46,19 +60,19 @@ func main() {
 		var sDiv, minDiv int
 		minDiv = abs(r1-l1) + abs(r2-l2)
 
-		for i := l1; i+d1 <= r1; i++ {
+		for i := r1; i-d1 >= l1; i-- {
 			for j := l2; j+d2 <= r2; j++ {
-				if i+d1 <= j || i >= j+d2 {
-					sDiv = abs(s1-i) + abs(s2-j)
+				if i <= j || i-d1 >= j+d2 {
+					sDiv = abs(s1-(i-d1)) + abs(s2-j)
 
 					if minDiv > sDiv {
-						rList[0], rList[1] = i, j
+						rList[0], rList[1] = i-d1, j
 						minDiv = sDiv
 					}
 				}
 			}
 
-			if minDiv == 0 {
+			if minDiv == 1 {
 				break
 			}
 		}
