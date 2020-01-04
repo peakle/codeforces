@@ -58,11 +58,11 @@ func main() {
 
 	arr := make([]int, n)
 
-	var el int
-	for i := 0; i < n; i++ {
+	var element,index int
+	for index = 0; index < n; index++ {
 		scanner.Scan()
-		el, _ = strconv.Atoi(scanner.Text())
-		arr[i] = el
+		element, _ = strconv.Atoi(scanner.Text())
+		arr[index] = element
 	}
 
 	sort.Ints(arr)
@@ -71,16 +71,16 @@ func main() {
 	arrLen := len(arr)
 	lastIndex := arrLen - k
 
-	for i, el := range arr {
-		res += (el - prev) * arrLen
+	for index, element = range arr {
+		res += (element - prev) * arrLen
 
-		if i == lastIndex {
+		if index == lastIndex {
 			res++
 			break
 		}
 
 		arrLen--
-		prev = el
+		prev = element
 	}
 
 	fmt.Println(res)
