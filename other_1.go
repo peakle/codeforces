@@ -38,7 +38,7 @@ import (
 
 стандартный вывод:
 21
- */
+*/
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -58,7 +58,7 @@ func main() {
 
 	arr := make([]int, n)
 
-	var element,index int
+	var element, index int
 	for index = 0; index < n; index++ {
 		scanner.Scan()
 		element, _ = strconv.Atoi(scanner.Text())
@@ -73,13 +73,19 @@ func main() {
 
 	for index, element = range arr {
 		res += (element - prev) * arrLen
+		arrLen--
 
 		if index == lastIndex {
-			res++
+			for ; index < arrLen; index++ {
+				if arr[index] > element {
+					res += len(arr) - index
+					break
+				}
+			}
+
 			break
 		}
 
-		arrLen--
 		prev = element
 	}
 
