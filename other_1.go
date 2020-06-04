@@ -65,28 +65,58 @@ func main() {
 		arr[index] = element
 	}
 
-	sort.Ints(arr)
-	var res, prev int
-
 	arrLen := len(arr)
-	lastIndex := arrLen - k
+	sort.Ints(arr)
 
-	for index, element = range arr {
-		res += (element - prev) * arrLen
-		arrLen--
+	var res int
 
-		if index == lastIndex {
-			for ; index < arrLen; index++ {
-				if arr[index] > element {
-					res += len(arr) - index
-					break
-				}
+	if k == n {
+		res = arr[0] * n
+		if arrLen > 1 {
+			if arr[0] < arr[1] {
+				res += arrLen - 1
 			}
-
-			break
+		}
+	} else {
+		var kInd = arrLen - k
+		var addInt int
+		for i := 0; i < kInd; i++ {
+			addInt += arr[i]
 		}
 
-		prev = element
+		var needAmount, diffAmount int
+		factor := 1
+		minRow := arr[kInd]
+
+		for ; addInt > 0; {
+			if minRow < arr[arrLen-1] {
+				for ; minRow == arr[kInd+factor]; factor++ {
+				}
+
+				diffAmount = arr[kInd+factor] - minRow
+				needAmount = diffAmount * factor
+				if needAmount < addInt {
+					minRow += diffAmount
+					addInt -= needAmount
+				} else {
+					break
+				}
+			} else {
+				factor = k
+				break
+			}
+		}
+
+		minRow += addInt / factor
+		res = minRow*k + addInt%factor
+
+		minRowInd := kInd + factor
+		for ; minRowInd < arrLen; minRowInd++ {
+			if minRow < arr[minRowInd] {
+				res += arrLen - minRowInd
+				break
+			}
+		}
 	}
 
 	fmt.Println(res)
