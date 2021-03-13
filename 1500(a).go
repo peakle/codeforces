@@ -14,20 +14,27 @@ type setType struct {
 
 var ar []int
 
-const maxTokenSize int = 2500000 * 7
+const maxTokenSize = 2500000 * 7
 
 func main() {
 	var size int
-	fmt.Scan(&size)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Buffer(make([]byte, 0, maxTokenSize), maxTokenSize)
+
+	scanner.Scan()
+
+	size, _ = strconv.Atoi(scanner.Text())
 
 	var ar = make([]int, 0, size)
 	var sums = make(map[int]setType, size)
 	var val int
 
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Buffer(make([]byte, 0, maxTokenSize), maxTokenSize)
 	scanner.Scan()
-	for _, v := range strings.Split(scanner.Text(), " ") {
+
+	inputs := strings.Split(scanner.Text(), " ")
+
+	for _, v := range inputs {
 		val, _ = strconv.Atoi(v)
 		ar = append(ar, val)
 	}
