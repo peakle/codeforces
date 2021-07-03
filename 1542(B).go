@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
-	"strings"
 )
 
 // если не проходят базовые случаи
@@ -13,53 +11,34 @@ import (
 // посчитать сумму геометрической прогрессии n / (i * a) элемента, проверить входит ли в арифмитическую прогрессию
 // посчитать сумму арифимитической прогрессии n - (i * b)
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter(os.Stdout)
 
-	testCount, _ := strconv.Atoi(scanner.Text())
+	var testCount int
+	fmt.Fscan(in, &testCount)
 
-	inputList := make([]int, 0, 3)
-next:
 	for i := 0; i < testCount; i++ {
-		inputList = inputList[:0]
+		var n, a, b int64
+		fmt.Fscan(in, &n, &a, &b)
 
-		scanner.Scan()
-		input := scanner.Text()
-
-		for _, p := range strings.Split(input, " ") {
-			o, _ := strconv.Atoi(p)
-			inputList = append(inputList, o)
-		}
-
-		n, a, b := inputList[0], inputList[1], inputList[2]
-
-		if n%a == 0 && a != 1 {
-			fmt.Println("Yes")
-			continue
-		}
-
-		if n%b == 1 || b == 1 {
-			fmt.Println("Yes")
-			continue
-		}
-
-		if a == 1 {
-			fmt.Println("No")
-			continue
-		}
-
-		sumG := 1
-		prevSum := 1
-		for sumG < n {
-			prevSum = sumG
-			sumG = prevSum * a
-
+		var yes bool
+		var sumG int64 = 1
+		for ; sumG <= n; sumG *= a {
 			if (n-sumG)%b == 0 {
-				fmt.Println("Yes")
-				continue next
+				yes = true
+				break
+			}
+			if a == 1 {
+				break
 			}
 		}
 
-		fmt.Println("No")
+		if yes {
+			fmt.Fprintln(out, "Yes")
+		} else {
+			fmt.Fprintln(out, "No")
+		}
 	}
+
+	_ = out.Flush()
 }
