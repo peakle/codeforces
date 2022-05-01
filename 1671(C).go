@@ -9,18 +9,21 @@ import (
 	"strings"
 )
 
-const maxTokenSize = 4 * 100000
+const maxTokenSize = 25000000 * 7
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 0, maxTokenSize), maxTokenSize)
 	scanner.Scan()
 
-	countSum := func(pieces []int) int {
-		var sum int
+	countSum := func(pieces []int64) []int64 {
+		var sum = make([]int64, 0, len(pieces))
+		var local int64
 		for _, piece := range pieces {
-			sum += piece
+			local += piece
+			sum = append(sum, local)
 		}
+
 		return sum
 	}
 
@@ -29,35 +32,40 @@ func main() {
 		scanner.Scan()
 		s := strings.Split(scanner.Text(), " ")
 
-		shopCount, _ := strconv.Atoi(s[0])
-		moneyForDay, _ := strconv.Atoi(s[1])
+		shopCount, _ := strconv.ParseInt(s[0], 10, 64)
+		moneyForDay, _ := strconv.ParseInt(s[1], 10, 64)
 
-		prices := make([]int, 0, 30)
+		prices := make([]int64, 0, shopCount)
 		scanner.Scan()
 
 		for _, p := range strings.Split(scanner.Text(), " ") {
-			price, _ := strconv.Atoi(p)
+			price, _ := strconv.ParseInt(p, 10, 64)
 			prices = append(prices, price)
 		}
 
-		sort.Ints(prices)
+		sort.Slice(prices, func(i, j int) bool {
+			return prices[i] < prices[j]
+		})
 
-		var dayNum int
-		var sugarSum int
+		var dayNum int64
+		var sugarSum int64
+		sum := countSum(prices)
+
 		for {
-			sum := countSum(prices) + shopCount*dayNum
-			if sum > moneyForDay  {
+			startSum := moneyForDay - (sum[shopCount-1] + shopCount*dayNum)
+			if startSum < 0 {
 				shopCount--
 				if shopCount == 0 {
 					break
 				}
 
-				prices = prices[:shopCount]
 				continue
 			}
 
-			dayNum++
-			sugarSum += shopCount
+			days := (startSum / shopCount) + 1
+
+			dayNum += days
+			sugarSum += shopCount * days
 		}
 
 		fmt.Println(sugarSum)
