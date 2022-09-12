@@ -21,20 +21,19 @@ func main() {
 		n := 0
 		fmt.Fscan(in, &n)
 
-		dominos := make([]domin, 0, n)
+		dominos := make(map[int][]int, n)
 
 		var failed bool
-		for ; n > 0; n-- {
+		for N := n; N > 0; N-- {
 			a, b := 0, 0
 			fmt.Fscan(in, &a, &b)
 
-			if a == b {
+			dominos[a] = append(dominos[a], b)
+			dominos[b] = append(dominos[b], a)
+
+			if a == b || len(dominos[a]) > 2 || len(dominos[b]) > 2 {
 				failed = true
 			}
-			dominos = append(dominos, domin{
-				a: a,
-				b: b,
-			})
 		}
 
 		if failed {
@@ -42,53 +41,32 @@ func main() {
 			continue
 		}
 
-		fg, sg := make([]domin, 0, len(dominos)/2), make([]domin, 0, len(dominos)/2)
-		empty := domin{}
+		used := make(map[int]bool)
+		var fn func(v int) int
 
-		uniq := map[int]struct{}{}
-		for i, d := range dominos {
-			if d == empty {
-				continue
+		fn = func(v int) int {
+			used[v] = true
+			for _, now := range dominos[v] {
+				if !used[now] {
+					return fn(now) + 1
+				}
 			}
+			return 1
+		}
 
-			_, ok := uniq[d.a]
-			_, ok2 := uniq[d.b]
-			if !ok && !ok2 {
-				uniq[d.a] = struct{}{}
-				uniq[d.b] = struct{}{}
-				dominos[i] = empty
-				fg = append(fg, domin{
-					a: d.a,
-					b: d.b,
-				})
+		for i := 0; i < n; i++ {
+			if !used[i+1] {
+				if fn(i+1)%2 > 0 {
+					failed = true
+					break
+				}
 			}
 		}
 
-		uniq = map[int]struct{}{}
-		for i, d := range dominos {
-			if d == empty {
-				continue
-			}
-
-			_, ok := uniq[d.a]
-			_, ok2 := uniq[d.b]
-			if !ok && !ok2 {
-				uniq[d.a] = struct{}{}
-				uniq[d.b] = struct{}{}
-				dominos[i] = empty
-				sg = append(sg, domin{
-					a: d.a,
-					b: d.b,
-				})
-			} else {
-				break
-			}
-		}
-
-		if len(sg)+len(fg) == len(dominos) {
-			fmt.Println("yes")
-		} else {
+		if failed {
 			fmt.Println("no")
+		} else {
+			fmt.Println("yes")
 		}
 	}
 }
