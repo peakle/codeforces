@@ -6,6 +6,24 @@ import (
 	"time"
 )
 
+// 4
+// 10 10.02 11.05
+// 10 11.12 23.12
+// 100 24.05 30.06
+// 4342 10.07 12.09
+
+// 5.00
+// 104.04
+// 4342.00
+// 9.88
+
+// 1
+// 1000000 01.01 31.12
+
+// 246574.80
+// 249314.52
+// 252054.24
+// 252054.24
 func main() {
 	var counter int
 	fmt.Scan(&counter)
@@ -17,18 +35,13 @@ func main() {
 		fmt.Scan(&sum, &start, &end)
 
 		startT, _ := time.Parse("02.01.2006", start+".2022")
-		endT, _ := time.Parse("02.01.2006", end+".2022")
+		endT, _ := time.Parse("02.01.2006", end+".2022") // 29 Feb will be first March
 
 		days := (endT.Sub(startT).Hours() / 24) + 1
 
-		perDay := math.Floor((sum / days) * 100)
+		perDay := math.Ceil((sum / days) * 100)
 
 		for {
-			// (1-1) /3 = 0
-			// (2-1) /3 = 0
-			// ...
-			// (11-1) /3 = 3
-			// (12-1) /3 = 3
 			quart := (int(startT.Month()) - 1) / 3
 			res[quart] += perDay
 			startT = startT.Add(24 * time.Hour)
@@ -40,6 +53,6 @@ func main() {
 	}
 
 	for _, r := range res {
-		fmt.Printf("%.2f\n", r/100)
+		fmt.Printf("%.2f\n", float64(r/100))
 	}
 }
