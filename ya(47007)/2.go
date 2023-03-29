@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/big"
 	"time"
 )
 
@@ -28,7 +29,7 @@ func main() {
 	var counter int
 	fmt.Scan(&counter)
 
-	res := []float64{0, 0, 0, 0}
+	res := []*big.Float{big.NewFloat(0), big.NewFloat(0), big.NewFloat(0), big.NewFloat(0)}
 	for i := 0; i < counter; i++ {
 		var sum float64
 		var start, end string
@@ -39,11 +40,11 @@ func main() {
 
 		days := (endT.Sub(startT).Hours() / 24) + 1
 
-		perDay := math.Ceil((sum / days) * 100)
+		perDay := math.Floor((sum / days) * 100)
 
 		for {
 			quart := (int(startT.Month()) - 1) / 3
-			res[quart] += perDay
+			res[quart] = res[quart].Add(res[quart], big.NewFloat(perDay))
 			startT = startT.Add(24 * time.Hour)
 
 			if startT.After(endT) && !startT.Equal(endT) {
@@ -53,6 +54,6 @@ func main() {
 	}
 
 	for _, r := range res {
-		fmt.Printf("%.2f\n", float64(r/100))
+		fmt.Printf("%.2f\n", r.Quo(r, big.NewFloat(100)))
 	}
 }
